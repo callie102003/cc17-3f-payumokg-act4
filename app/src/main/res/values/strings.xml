@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">Tipcal</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">Tip Calculator</string>
+    <string name="invalid_cost">Please enter a valid cost.</string>
+    <string name="tip_amount">Tip Amount: %s</string>
 </resources>
