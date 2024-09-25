@@ -19,10 +19,9 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-        // Set click listener for the button
         binding.calcButton.setOnClickListener { calculateTip() }
 
-        // Adjust the insets for edge-to-edge display
+     
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -31,14 +30,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun calculateTip() {
-        // Get the cost of service and handle potential null or empty values
+     
         val costInput = binding.tipsForService.text.toString()
         val cost: Double = costInput.toDoubleOrNull() ?: run {
             binding.tipResult.text = "Invalid cost"
             return
         }
 
-        // Get the selected tip percentage
+     
         val chosenId: Int = binding.tipOption.checkedRadioButtonId
         val tipPercentage: Double = when (chosenId) {
             R.id.option_ten_percent -> 0.1
@@ -47,11 +46,10 @@ class MainActivity : AppCompatActivity() {
             else -> 0.05
         }
 
-        // Calculate the tip
+   
         var tip: Double = cost * tipPercentage
         val roundUp: Boolean = binding.roundTip.isChecked
 
-        // Round up if selected
         if (roundUp) {
             tip = ceil(tip)
         }
