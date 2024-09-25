@@ -4,6 +4,17 @@ plugins {
 }
 
 android {
+
+    viewBinding {
+        enabled = true
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+android {
     namespace = "com.example.tipcal"
     compileSdk = 34
 
