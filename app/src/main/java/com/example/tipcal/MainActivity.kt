@@ -1,76 +1,62 @@
-package com.example.tipcalculator
+package com.example.tipcal
 
 import android.os.Bundle
-import android.widget.*
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import java.text.DecimalFormat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.tipcal.databinding.ActivityMainBinding
+import java.text.NumberFormat
 import kotlin.math.ceil
-import com.example.tipcalculator.R
-
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tipsForServiceEditText: EditText
-    private lateinit var tipOptionRadioGroup: RadioGroup
-    private lateinit var roundTipSwitch: Switch
-    private lateinit var calcButton: Button
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+        setContentView(binding.root)
 
-        // Initialize the views
-        tipsForServiceEditText = findViewById(R.id.tips_for_service)
-        tipOptionRadioGroup = findViewById(R.id.tip_option)
-        roundTipSwitch = findViewById(R.id.round_tip)
-        calcButton = findViewById(R.id.calc_button)
+        // Set click listener for the button
+        binding.calcButton.setOnClickListener { calculateTip() }
 
-        // Set the calculate button click listener
-        calcButton.setOnClickListener {
-            calculateTip()
+        // Adjust the insets for edge-to-edge display
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
     }
 
     private fun calculateTip() {
-        val tipInput = tipsForServiceEditText.text.toString()
-
-        // Check if the tip input is empty
-        if (tipInput.isEmpty()) {
-            Toast.makeText(this, "Please enter the tip amount", Toast.LENGTH_SHORT).show()
+        // Get the cost of service and handle potential null or empty values
+        val costInput = binding.tipsForService.text.toString()
+        val cost: Double = costInput.toDoubleOrNull() ?: run {
+            binding.tipResult.text = "Invalid cost"
             return
         }
 
-        // Parse the base amount entered by the user
-        val baseAmount = tipInput.toDoubleOrNull()
-
-        if (baseAmount == null || baseAmount <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Get the selected tip percentage based on the selected RadioButton
-        val tipPercentage = when (tipOptionRadioGroup.checkedRadioButtonId) {
-            R.id.option_twenty_percent -> 0.20
+        // Get the selected tip percentage
+        val chosenId: Int = binding.tipOption.checkedRadioButtonId
+        val tipPercentage: Double = when (chosenId) {
+            R.id.option_ten_percent -> 0.1
             R.id.option_fifteen_percent -> 0.15
-            R.id.option_ten_percent -> 0.10
-            else -> {
-                Toast.makeText(this, "Please select a service rating", Toast.LENGTH_SHORT).show()
-                return
-            }
+            R.id.option_twenty_percent -> 0.2
+            else -> 0.05
         }
 
         // Calculate the tip
-        var tipAmount = baseAmount * tipPercentage
+        var tip: Double = cost * tipPercentage
+        val roundUp: Boolean = binding.roundTip.isChecked
 
-        // If round tip switch is enabled, round up the tip
-        if (roundTipSwitch.isChecked) {
-            tipAmount = ceil(tipAmount)
+        // Round up if selected
+        if (roundUp) {
+            tip = ceil(tip)
         }
 
-        // Format the tip amount to 2 decimal places
-        val formattedTip = DecimalFormat("#.##").format(ttipAmount)
-
-        // Display the calculated tip in a Toast or update a UI element if needed
-        Toast.makeText(this, "Tip Amount: $$formattedTip", Toast.LENGTH_LONG).show()
+        val currency :String = NumberFormat.getCurrencyInstance().format(tip)
+        binding.tipResult.text = String.format("Tip Amount: $%.2f", tip)
     }
 }
